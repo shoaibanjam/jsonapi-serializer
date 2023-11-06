@@ -66,7 +66,9 @@ module FastJsonapi
         FastJsonapi.call_proc(meta_to_serialize, record, params)
       end
 
-      def record_hash(record, fieldset, includes_list, params = {})
+      def record_hash(record, fieldset, includes_list, params = {}, hash_only = false)
+        return attributes_hash(record, fieldset, params) if attributes_to_serialize.present? && hash_only
+
         if cache_store_instance
           cache_opts = record_cache_options(cache_store_options, fieldset, includes_list, params)
           record_hash = cache_store_instance.fetch(record, **cache_opts) do
