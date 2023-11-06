@@ -225,6 +225,42 @@ module FastJsonapi
 
       alias_method :attribute, :attributes
 
+      def single_record_attributes(*attributes_list, &block)
+        # unless is_collection?(@resource)
+          attributes_list = attributes_list.first if attributes_list.first.class.is_a?(Array)
+          options = attributes_list.last.is_a?(Hash) ? attributes_list.pop : {}
+          self.single_attributes_to_serialize = {} if self.single_attributes_to_serialize.nil?
+
+          attributes_list.each do |attr_name|
+            method_name = attr_name
+            key = run_key_transform(method_name)
+            single_attributes_to_serialize[key] = Attribute.new(
+              key: key,
+              method: block || method_name,
+              options: options
+            )
+          end
+        # end
+      end
+
+      def collection_attributes(*attributes_list, &block)
+        # if is_collection?(@resource)
+          attributes_list = attributes_list.first if attributes_list.first.class.is_a?(Array)
+          options = attributes_list.last.is_a?(Hash) ? attributes_list.pop : {}
+          self.collection_attributes_to_serialize = {} if self.collection_attributes_to_serialize.nil?
+
+          attributes_list.each do |attr_name|
+            method_name = attr_name
+            key = run_key_transform(method_name)
+            collection_attributes_to_serialize[key] = Attribute.new(
+              key: key,
+              method: block || method_name,
+              options: options
+            )
+          end
+        # end
+      end
+
       def add_relationship(relationship)
         self.relationships_to_serialize = {} if relationships_to_serialize.nil?
         self.cachable_relationships_to_serialize = {} if cachable_relationships_to_serialize.nil?
