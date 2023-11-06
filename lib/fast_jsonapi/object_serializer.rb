@@ -77,6 +77,10 @@ module FastJsonapi
       serializable_hash
     end
 
+    def serialized_json
+      ActiveSupport::JSON.encode(serializable_hash)
+    end
+
     private
 
     def process_options(options)
